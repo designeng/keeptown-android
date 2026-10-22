@@ -42,12 +42,12 @@ fun rememberTileStyleUrl(
 ): String {
     val darkMode = !ElementTheme.isLightTheme
     return remember(darkMode, mapTilerConfig) {
-        // Without config, the map is not displayed, so the style URL is not used.
+        // Without MapTiler config, fall back to the free OpenFreeMap tiles, which need no API key.
         mapTilerConfig?.let {
             MapTilerTileServerStyleUriBuilder().build(
                 mapTilerConfig = it,
                 darkMode = darkMode,
             )
-        }.orEmpty()
+        } ?: OpenFreeMapDefaults.styleUrl(darkMode)
     }
 }

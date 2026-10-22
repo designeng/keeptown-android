@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.max
 import io.element.android.libraries.core.data.tryOrNull
 import io.element.android.libraries.designsystem.text.toDp
 import io.element.android.libraries.designsystem.theme.components.BottomSheetScaffold
-import io.element.android.libraries.designsystem.theme.components.CircularProgressIndicator
 import org.maplibre.compose.interaction.MapInteractions
 import org.maplibre.compose.map.MapState
 import org.maplibre.compose.map.MapUiOptions
@@ -71,7 +70,6 @@ import kotlin.math.roundToInt
  *
  * @param mapState The map state (camera, style and layer content) for the map. `null` in
  *   inspection/preview mode, where the native map cannot initialize and a placeholder is shown.
- * @param isReady Used to gate rendering until the map should be displayed
  * @param modifier Modifier for the root layout
  * @param scaffoldState State for the bottom sheet scaffold
  * @param renderOptions The options to configure the map rendering
@@ -89,7 +87,6 @@ import kotlin.math.roundToInt
 @Composable
 fun MapBottomSheetScaffold(
     mapState: MapState?,
-    isReady: Boolean,
     modifier: Modifier = Modifier,
     scaffoldState: BottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(
@@ -137,7 +134,7 @@ fun MapBottomSheetScaffold(
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
-                    isReady && mapState != null -> {
+                    mapState != null -> {
                         MaplibreMap(
                             state = mapState,
                             viewportInsets = sheetPadding,
@@ -166,15 +163,10 @@ fun MapBottomSheetScaffold(
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
-                    mapState == null -> {
+                    else -> {
                         // Inspection/preview mode: the map cannot initialize, render a placeholder
                         // matching MaplibreMap's own inspection rendering.
                         Box(modifier = Modifier.fillMaxSize().background(Color.Gray))
-                    }
-                    else -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                        }
                     }
                 }
                 // App overlay (FABs, pins, live-location indicators). Layered above the map so it is
