@@ -66,6 +66,7 @@ dependencies {
     implementation(projects.libraries.uiStrings)
     implementation(projects.features.enterprise.api)
     implementation(libs.coil.compose)
+    implementation(libs.maplibre.compose)
 
     testCommonDependencies(libs)
 }

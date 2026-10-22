@@ -29,7 +29,7 @@ class DefaultLocationServiceTest {
         )
         runCurrent()
         assertThat(locationService.mapTilerConfig.value).isEqualTo(buildTimeMapTilerConfig())
-        assertThat(locationService.isServiceAvailable().value).isEqualTo(buildTimeMapTilerConfig() != null)
+        assertThat(locationService.isServiceAvailable().value).isTrue()
     }
 
     @Test
@@ -39,7 +39,7 @@ class DefaultLocationServiceTest {
         )
         runCurrent()
         assertThat(locationService.mapTilerConfig.value).isEqualTo(buildTimeMapTilerConfig())
-        assertThat(locationService.isServiceAvailable().value).isEqualTo(buildTimeMapTilerConfig() != null)
+        assertThat(locationService.isServiceAvailable().value).isTrue()
     }
 
     @Test

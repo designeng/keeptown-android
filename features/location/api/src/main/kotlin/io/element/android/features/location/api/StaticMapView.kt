@@ -38,6 +38,7 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import io.element.android.compound.theme.ElementTheme
 import io.element.android.features.enterprise.api.remoteconfig.MapTilerConfig
+import io.element.android.features.location.api.internal.LiteMapView
 import io.element.android.features.location.api.internal.StaticMapPlaceholder
 import io.element.android.features.location.api.internal.centerBottomEdge
 import io.element.android.features.location.api.internal.rememberStaticMapBuilder
@@ -48,12 +49,13 @@ import io.element.android.libraries.designsystem.preview.PreviewsDayNight
 import io.element.android.libraries.designsystem.utils.CommonDrawables
 
 /**
- * Shows a static map image downloaded via a third party service's static maps API.
+ * Shows a map preview of a location: a static map image downloaded via MapTiler's static maps API,
+ * or a small non-interactive OpenFreeMap map when MapTiler is not configured.
  *
  * Handles 5 distinct cases:
  * 1. Stale location (pinVariant is StaleLocation) - shows stale map with stale pin, no fetching
  * 2. Null location - shows blurred placeholder, no pin, no loading
- * 3. Null mapTilerConfig (no map provider configured) - shows blurred placeholder, no pin, no fetching
+ * 3. Null mapTilerConfig (MapTiler not configured) - shows a non-interactive OpenFreeMap map with pin
  * 4. Loading (location != null, fetching) - shows blurred placeholder with loading indicator
  * 5. Success (location != null, loaded) - shows actual map with pin
  */
@@ -85,8 +87,7 @@ fun StaticMapView(
                 )
             }
             // Case 2: Null location - show blurred placeholder, no pin, no loading
-            // Case 3: No map provider configured - show blurred placeholder, no pin, no fetching
-            location == null || mapTilerConfig == null && !LocalInspectionMode.current -> {
+            location == null -> {
                 StaticMapPlaceholder(
                     painter = painterResource(R.drawable.blurred_map),
                     canReload = false,
@@ -94,6 +95,16 @@ fun StaticMapView(
                     width = maxWidth,
                     height = maxHeight,
                     onLoadMapClick = {}
+                )
+            }
+            // Case 3: MapTiler not configured - render the map on device with the free OpenFreeMap tiles
+            mapTilerConfig == null && !LocalInspectionMode.current -> {
+                LiteMapView(
+                    location = location,
+                    zoom = zoom,
+                    pinVariant = pinVariant,
+                    darkMode = darkMode,
+                    modifier = Modifier.size(width = maxWidth, height = maxHeight),
                 )
             }
             // Cases 4 & 5: Non-null location - fetch map

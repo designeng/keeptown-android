@@ -11,9 +11,11 @@ package io.element.android.features.location.test
 import io.element.android.features.enterprise.api.remoteconfig.MapTilerConfig
 import io.element.android.features.location.api.LocationService
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class FakeLocationService(
     mapTilerConfig: MapTilerConfig? = null,
+    private val isServiceAvailable: MutableStateFlow<Boolean> = MutableStateFlow(true),
 ) : LocationService {
     constructor(isServiceAvailable: Boolean) : this(
         MapTilerConfig(
@@ -21,8 +23,11 @@ class FakeLocationService(
             lightStyleId = null,
             darkStyleId = null,
             baseUrl = null,
-        ).takeIf { isServiceAvailable }
+        ).takeIf { isServiceAvailable },
+        MutableStateFlow(isServiceAvailable),
     )
 
     override val mapTilerConfig = MutableStateFlow(mapTilerConfig)
+
+    override fun isServiceAvailable(): StateFlow<Boolean> = isServiceAvailable
 }

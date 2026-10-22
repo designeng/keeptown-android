@@ -9,20 +9,24 @@
 package io.element.android.features.location.api
 
 import io.element.android.features.enterprise.api.remoteconfig.MapTilerConfig
-import io.element.android.libraries.core.coroutine.mapState
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Tells whether the location features can be used at all, which depends on a map provider being configured,
- * either by the homeserver or at build time.
+ * Provides the map provider configuration and tells whether the location features can be used.
  */
 interface LocationService {
     /**
-     * The [MapTilerConfig] to use to render the maps, or null if no map provider is configured.
+     * The [MapTilerConfig] to use to render the maps, or null if MapTiler is not configured,
+     * in which case the maps are rendered with the free OpenFreeMap tiles.
      * The configuration provided by the homeserver takes precedence over the one defined at build time.
      */
     val mapTilerConfig: StateFlow<MapTilerConfig?>
 
-    /** Whether location sharing and map rendering are available; `false` disables the whole feature in the UI. */
-    fun isServiceAvailable(): StateFlow<Boolean> = mapTilerConfig.mapState { it != null }
+    /**
+     * Whether location sharing and map rendering are available; `false` disables the whole feature in the UI.
+     * Always available by default, since OpenFreeMap is used when MapTiler is not configured.
+     */
+    fun isServiceAvailable(): StateFlow<Boolean> = MutableStateFlow(true).asStateFlow()
 }

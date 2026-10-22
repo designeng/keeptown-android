@@ -178,7 +178,6 @@ private fun ShowLocationScaffold(
         }
     }
     MapBottomSheetScaffold(
-        isReady = state.mapTilerConfig != null,
         sheetDragHandle = if (state.isSheetDraggable) {
             { BottomSheetDefaults.DragHandle() }
         } else {

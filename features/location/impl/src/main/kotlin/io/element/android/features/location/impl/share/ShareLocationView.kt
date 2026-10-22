@@ -181,7 +181,6 @@ private fun ShareLocationScaffold(
         )
     )
     MapBottomSheetScaffold(
-        isReady = state.mapTilerConfig != null,
         mapState = mapState,
         modifier = modifier,
         scaffoldState = scaffoldState,
