@@ -30,7 +30,7 @@ class RustTemporaryMatrixClientFactory(
             val formattedServerName = if (port != -1) "$domain:$port" else domain
 
             val sessionPaths = sessionPathsFactory.create()
-            val client = rustMatrixClientFactory.getBaseClientBuilder(
+            val builder = rustMatrixClientFactory.getBaseClientBuilder(
                 sessionPaths = sessionPaths,
                 clientSecret = null,
                 slidingSyncType = ClientBuilderSlidingSync.Native,
@@ -38,8 +38,12 @@ class RustTemporaryMatrixClientFactory(
                 sessionDelegate = NoOpClientSessionDelegate,
                 autoEnableEncryption = false,
             )
-                .serverName(formattedServerName)
-                .build()
+            // Keep an explicit plain HTTP URL (e.g. a local dev homeserver), otherwise the SDK would default to HTTPS.
+            val client = if (parsedUrl.protocol.equals("http", ignoreCase = true)) {
+                builder.serverNameOrHomeserverUrl(serverName)
+            } else {
+                builder.serverName(formattedServerName)
+            }.build()
             RustTemporaryMatrixClient(client, sessionPaths)
         }
     }
